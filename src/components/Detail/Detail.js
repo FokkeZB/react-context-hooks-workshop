@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import SubHeader from '../Header/SubHeader';
 import HotelItem from '../Hotels/HotelItem';
@@ -20,15 +20,17 @@ const Alert = styled.span`
 `;
 
 const Detail = ({ match, history }) => {
-  const { loading: hotelsLoading, error: hotelsError, hotels } = useHotels();
-  const { loading: reviewsLoading, error: reviewsError, reviews } = useReviews();
-
-  const loading = hotelsLoading || reviewsLoading;
-  const error = hotelsError || reviewsError;
+  const { error: hotelsError, hotels, ensureHotel } = useHotels();
+  const { error: reviewsError, reviews } = useReviews();
 
   const hotelId = parseInt(match.params.id, 10);
-
   const hotel = hotels.find(hotel => hotel.id === hotelId);
+
+  useEffect(() => ensureHotel(hotelId), [ensureHotel, hotelId]);
+
+  const error = hotelsError || reviewsError;
+  const loading = !hotel && !error;
+
   const hotelReviews = reviews.filter(review => review.hotelId === hotelId);
 
   return !loading && !error ? (
@@ -44,7 +46,7 @@ const Detail = ({ match, history }) => {
 
       <h3>Reviews:</h3>
       <ReviewsWrapper>
-        {hotelReviews.map(review => <ReviewItem data={review} />)}
+        {hotelReviews.map(review => <ReviewItem data={review} key={review.id} />)}
       </ReviewsWrapper>
     </>
   ) : (

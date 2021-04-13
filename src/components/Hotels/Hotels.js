@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import SubHeader from '../Header/SubHeader';
@@ -23,7 +24,9 @@ const Alert = styled.span`
 `;
 
 const Hotels = ({ history }) => {
-  const { loading, error, hotels } = useHotels();
+  const { ensureHotels, loading, error, hotels } = useHotels();
+
+  useEffect(() => ensureHotels(), [ensureHotels]);
 
   return !loading && !error ? (
     <>

@@ -45,7 +45,7 @@ export const ReviewsProvider = ({ children }) => {
     fetch('https://my-json-server.typicode.com/royderks/react-context-hooks-workshop/reviews')
       .then(res => res.json())
       .then(reviews => dispatch({ type: 'addReviews', payload: reviews }))
-      .then(error => dispatch({ type: 'setError', payload: error }))
+      .catch(error => dispatch({ type: 'setError', payload: error }))
   }, [])
 
   const value = {
