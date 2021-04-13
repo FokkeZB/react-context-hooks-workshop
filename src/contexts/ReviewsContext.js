@@ -1,26 +1,47 @@
-import React, { useContext, useEffect, useState, createContext } from "react";
+import React, { useContext, useEffect, useReducer, createContext } from "react";
 
 const ReviewsContext = createContext(null);
 
+const initialState = {
+  loading: true,
+  reviews: [],
+  error: null,
+}
+
 export const ReviewsProvider = ({ children }) => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState();
-  const [reviews, setReviews] = useState([]);
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case 'addReviews':
+        return {
+          loading: false,
+          error: null,
+          reviews: [
+            ...state.reviews,
+            ...action.payload,
+          ],
+        };
+      case 'error':
+        return {
+          loading: false,
+          error: action.payload,
+          hotels: [],
+        };
+      default:
+        return state;
+    }
+  }
+
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     fetch('https://my-json-server.typicode.com/royderks/react-context-hooks-workshop/reviews')
       .then(res => res.json())
-      .then(setReviews)
-      .catch(setError)
-      .finally(() => setLoading(false))
+      .then(reviews => dispatch({ type: 'addReviews', payload: reviews }))
+      .then(error => dispatch({ type: 'setError', payload: error }))
   }, [])
 
-  const value = {
-    loading, error, reviews
-  }
-
   return (
-    <ReviewsContext.Provider value={value}>
+    <ReviewsContext.Provider value={state}>
       {children}
     </ReviewsContext.Provider>
   );

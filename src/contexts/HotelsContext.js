@@ -1,26 +1,47 @@
-import React, { useContext, useEffect, useState, createContext } from "react";
+import React, { useContext, useEffect, createContext, useReducer } from "react";
 
 const HotelsContext = createContext(null);
 
+const initialState = {
+  loading: true,
+  error: null,
+  hotels: [],
+}
+
 export const HotelsProvider = ({ children }) => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState();
-  const [hotels, setHotels] = useState([]);
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case 'addHotels':
+        return {
+          loading: false,
+          error: null,
+          hotels: [
+            ...state.hotels,
+            ...action.payload,
+          ],
+        };
+      case 'error':
+        return {
+          loading: false,
+          error: action.payload,
+          hotels: [],
+        };
+      default:
+        return state;
+    }
+  }
+
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     fetch('https://my-json-server.typicode.com/royderks/react-context-hooks-workshop/hotels')
       .then(res => res.json())
-      .then(setHotels)
-      .catch(setError)
-      .finally(() => setLoading(false))
+      .then(hotels => dispatch({ type: 'addHotels', payload: hotels }))
+      .then(error => dispatch({ type: 'setError', payload: error }))
   }, [])
 
-  const value = {
-    loading, error, hotels
-  }
-
   return (
-    <HotelsContext.Provider value={value}>
+    <HotelsContext.Provider value={state}>
       {children}
     </HotelsContext.Provider>
   );
