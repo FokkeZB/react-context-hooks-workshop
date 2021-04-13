@@ -5,6 +5,7 @@ import HotelItem from '../Hotels/HotelItem';
 import ReviewItem from './ReviewItem';
 
 import { useHotels } from '../../contexts/HotelsContext';
+import { useReviews } from '../../contexts/ReviewsContext';
 
 const ReviewsWrapper = styled.div`
   display: flex;
@@ -19,7 +20,11 @@ const Alert = styled.span`
 `;
 
 const Detail = ({ match, history }) => {
-  const { loading, error, hotels, reviews } = useHotels();
+  const { loading: hotelsLoading, error: hotelsError, hotels } = useHotels();
+  const { loading: reviewsLoading, error: reviewsError, reviews } = useReviews();
+
+  const loading = hotelsLoading || reviewsLoading;
+  const error = hotelsError || reviewsError;
 
   const hotelId = parseInt(match.params.id, 10);
 
