@@ -47,7 +47,7 @@ const Hotels = ({ history }) => {
       </HotelItemsWrapper>
     </>
   ) : (
-    <Alert>{loading ? 'Loading...' : error}</Alert>
+    <Alert>{loading ? 'Loading...' : String(error)}</Alert>
   );
 };
 
