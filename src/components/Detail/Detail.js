@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import SubHeader from '../Header/SubHeader';
 import HotelItem from '../Hotels/HotelItem';
 import ReviewItem from './ReviewItem';
+
+import { useHotels } from '../../contexts/HotelsContext';
 
 const ReviewsWrapper = styled.div`
   display: flex;
@@ -17,27 +19,12 @@ const Alert = styled.span`
 `;
 
 const Detail = ({ match, history }) => {
-  // Get this information from the API
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState();
-  const [hotel, setHotel] = useState();
-  const [reviews, setReviews] = useState([]);
+  const { loading, error, hotels, reviews } = useHotels();
 
-  useEffect(() => {
-    Promise.all([
-      fetch(`https://my-json-server.typicode.com/royderks/react-context-hooks-workshop/hotels/${match.params.id}`)
-        .then(res => res.json()),
-      fetch('https://my-json-server.typicode.com/royderks/react-context-hooks-workshop/reviews')
-        .then(res => res.json())
-        .then(reviews => reviews.filter(review => review.hotelId === parseInt(match.params.id, 10)))
-    ])
-      .then(([hotel, reviews]) => {
-        setHotel(hotel);
-        setReviews(reviews)
-      })
-      .catch(setError)
-      .finally(() => setLoading(false))
-  }, [match.params.id])
+  const hotelId = parseInt(match.params.id, 10);
+
+  const hotel = hotels.find(hotel => hotel.id === hotelId);
+  const hotelReviews = reviews.filter(review => review.hotelId === hotelId);
 
   return !loading && !error ? (
     <>
@@ -52,7 +39,7 @@ const Detail = ({ match, history }) => {
 
       <h3>Reviews:</h3>
       <ReviewsWrapper>
-        {reviews.map(review => <ReviewItem data={review} />)}
+        {hotelReviews.map(review => <ReviewItem data={review} />)}
       </ReviewsWrapper>
     </>
   ) : (

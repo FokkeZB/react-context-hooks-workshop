@@ -5,6 +5,8 @@ import Hotels from './Hotels/Hotels';
 import Detail from './Detail/Detail';
 import Form from './Form/Form';
 
+import { HotelsProvider } from '../contexts/HotelsContext';
+
 const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
@@ -22,7 +24,7 @@ const AppWrapper = styled.div`
 `;
 
 const App = () => (
-  <>
+  <HotelsProvider>
     <GlobalStyle />
     <AppWrapper>
       <Header />
@@ -32,7 +34,7 @@ const App = () => (
         <Route path='/hotel/:id' component={Detail} />
       </Switch>
     </AppWrapper>
-  </>
+  </HotelsProvider>
 );
 
 export default App;
