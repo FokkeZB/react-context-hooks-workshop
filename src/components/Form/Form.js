@@ -4,6 +4,8 @@ import SubHeader from '../Header/SubHeader';
 import FormInput from './FormInput';
 import Button from '../Button/Button';
 
+import { useReviews } from '../../contexts/ReviewsContext';
+
 const FormWrapper = styled.div`
   display: flex;
   justify-content: space-between;
@@ -21,27 +23,36 @@ const Form = ({ match, history }) => {
   const [rating, setRating] = useState('');
   const [description, setDescription] = useState('');
 
+  const { addReview } = useReviews();
+
   const handleOnSubmit = async (e) => {
     e.preventDefault();
 
     try {
+      const payload = {
+        title,
+        rating,
+        description,
+        id: Math.floor(Math.random() * 100),
+        hotelId: parseInt(match.params.id),
+      };
+
       const data = await fetch(
         `https://my-json-server.typicode.com/royderks/react-context-hooks-workshop/reviews`,
         {
           method: 'POST',
-          body: JSON.stringify({
-            title,
-            rating,
-            description,
-            id: Math.floor(Math.random() * 100),
-            hotelId: parseInt(match.params.id),
-          }),
+          body: JSON.stringify(payload),
         },
       );
       const dataJSON = await data.json();
 
       if (dataJSON.id) {
         console.log('Success');
+
+        addReview({
+          id: dataJSON.id,
+          ...payload,
+        })
       }
     } catch {
       console.log('Error');

@@ -20,6 +20,14 @@ export const ReviewsProvider = ({ children }) => {
             ...action.payload,
           ],
         };
+      case 'addReview':
+        return {
+          ...state,
+          reviews: [
+            ...state.reviews,
+            action.payload,
+          ],
+        };
       case 'error':
         return {
           loading: false,
@@ -40,8 +48,13 @@ export const ReviewsProvider = ({ children }) => {
       .then(error => dispatch({ type: 'setError', payload: error }))
   }, [])
 
+  const value = {
+    ...state,
+    addReview: (payload) => dispatch({ type: 'addReview', payload })
+  }
+
   return (
-    <ReviewsContext.Provider value={state}>
+    <ReviewsContext.Provider value={value}>
       {children}
     </ReviewsContext.Provider>
   );
